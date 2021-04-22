@@ -3,31 +3,53 @@
 @using BookLibrary.Application.Models
 @inject IBookService _bookService
 
+<div class="bg-image">
+    <SvgBack/>
+</div>
 <div class="container">
     <div class="search-panel">
-        <input type="text" @bind-value="_filter.SearchString"/>
-        <button @onclick="OnClickSearch" disabled="@_loading">search</button>
+        <div class="search-input">
+            <svg id="Capa_1" enable-background="new 0 0 512 512" height="512" viewBox="0 0 512 512" width="512" xmlns="http://www.w3.org/2000/svg"><g><g><path d="m13.217 498.794c-8.524-8.523-13.217-19.855-13.217-31.908s4.693-23.385 13.217-31.908l329.861-329.861c5.857-5.858 15.355-5.857 21.213 0l42.604 42.603c2.813 2.813 4.394 6.628 4.394 10.606s-1.58 7.793-4.394 10.606l-329.862 329.862c-8.797 8.797-20.353 13.195-31.908 13.195s-23.111-4.398-31.908-13.195z" fill="#464b52"/></g><path d="m406.895 147.72c2.813 2.813 4.394 6.628 4.394 10.606s-1.58 7.793-4.394 10.606l-329.862 329.862c-8.797 8.797-20.353 13.195-31.908 13.195s-23.111-4.398-31.908-13.195l372.376-372.376z" fill="#292b2f"/><circle cx="316.25" cy="195.761" fill="#11909b" r="195.75"/><path d="m454.601 57.409c35.446 35.446 57.399 84.383 57.399 138.352 0 107.937-87.813 195.75-195.75 195.75-53.968 0-102.906-21.953-138.351-57.399z" fill="#11909b"/><circle cx="316.25" cy="195.761" fill="#e1faff" r="135.5"/><path d="m316.25 331.261c-37.357 0-71.232-15.196-95.768-39.732l191.536-191.536c24.536 24.536 39.732 58.411 39.732 95.768 0 74.715-60.785 135.5-135.5 135.5z" fill="#c7f5ff"/></g></svg>
+            <input 
+                type="text"
+                placeholder="Search..."
+                @bind-value="_filter.SearchString" 
+                @onkeydown="@OnKeyDown"/>
+        </div>
+        <button @onclick="OnClickSearch" disabled="@_loading">Search</button>
         @if (_model is not null)
         {
-            <div>Time: @_model.Time</div>
+            <div class="elapsed-time">Time: @_model.Time.ToString("00") ms</div>
         }
     </div>
     <div class="books">
-        @if (_model is not null)
+        @if (_model is not null && _model.Books.Any())
         {
             foreach (var book in _model.Books)
             {
                 <div class="book">
-                    <div class="title">@book.Title</div>
-                    <div>Author: @book.Author</div>
-                    <div>@book.Blurb[..100]</div>
-                    <div>@book.Publisher @book.Year</div>
+                    <h3 class="title">@book.Title - @book.Author</h3>
+                    <div class="blurb">
+                        @if (book.Blurb.Length >= 300)
+                        {
+                            <span>@book.Blurb[..300]</span>
+                        }
+                        else
+                        {
+                            <span>@book.Blurb</span>
+                        }
+                    </div>
+                    <div class="publisher">@book.Publisher @book.Year</div>
                 </div>
             }
         }
+        else if (string.IsNullOrEmpty(_filter.SearchString))
+        {
+            <div class="no-content">Search something...</div>
+        }
         else
         {
-            <div>Search something...</div>
+            <div class="no-content">Nothing found</div>
         }
     </div>
 </div>
@@ -43,8 +65,23 @@
     private async void OnClickSearch()
     {
         _loading = true;
-        _model = await _bookService.Search(_filter);
+        if (!string.IsNullOrEmpty(_filter.SearchString))
+        {
+            _model = await _bookService.Search(_filter);
+        }
+        else
+        {
+            _model = null;
+        }
         _loading = false;
         StateHasChanged();
+    }
+    
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" && !_loading)
+        {
+            OnClickSearch();
+        }
     }
 }

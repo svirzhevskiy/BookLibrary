@@ -5,8 +5,11 @@
 
 :root{
     --bg-gradient: linear-gradient(90deg, rgba(130,199,194,1) 0%, rgba(124,193,172,1) 50%);
+    --bg-color: rgba(124,193,172,0.3);
     --text-color: #fafefd;
-    --title-color: #e27d5f;
+    --title-color: #11909b;
+    --muted-text: #5fa098;
+    --accent-color: #e27d5f;
 }
 
 html, body {
@@ -26,9 +29,9 @@ html, body {
     z-index: 1000;
 }
 
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
-    }
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}

@@ -6,7 +6,6 @@ using BookLibrary.Application.Models;
 using BookLibrary.Application.Services;
 using BookLibrary.Database;
 using Microsoft.EntityFrameworkCore;
-using NpgsqlTypes;
 using Book = BookLibrary.Application.Models.Book;
 
 namespace BookLibrary.Services
@@ -58,7 +57,7 @@ namespace BookLibrary.Services
                     Author = x.Author,
                     Publisher = x.Publisher
                 }),
-                Time = $"{elapsedTime.Milliseconds}ms"
+                Time = elapsedTime.TotalMilliseconds
             };
         }
     }
