@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using NpgsqlTypes;
 
 namespace BookLibrary.Database.Migrations
 {
@@ -50,6 +51,9 @@ namespace BookLibrary.Database.Migrations
 
                     b.Property<Guid>("PublisherId")
                         .HasColumnType("uuid");
+
+                    b.Property<NpgsqlTsVector>("SearchVector")
+                        .HasColumnType("tsvector");
 
                     b.Property<string>("Title")
                         .HasColumnType("text");

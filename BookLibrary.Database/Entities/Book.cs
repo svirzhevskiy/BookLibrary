@@ -1,4 +1,5 @@
 ﻿using System;
+using NpgsqlTypes;
 
 namespace BookLibrary.Database.Entities
 {
@@ -15,5 +16,7 @@ namespace BookLibrary.Database.Entities
         
         public Guid PublisherId { get; set; }
         public Publisher Publisher { get; set; }
+        
+        public NpgsqlTsVector SearchVector { get; set; }
     }
 }

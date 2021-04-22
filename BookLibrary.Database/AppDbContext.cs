@@ -11,14 +11,14 @@ namespace BookLibrary.Database
         
         public AppDbContext(DbContextOptions options) : base(options)
         {
-            Database.Migrate();
+            Database.MigrateAsync();
         }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=BookLibrary;Username=postgres;Password=postgres;");
+                optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=BookLib;Username=postgres;Password=postgres;");
             }
         }
 

@@ -93,7 +93,9 @@ namespace DataSeeder
                     Console.WriteLine($"Progress: {(double)current / data.Count * 100}%. Book {bookData.Title} added.");
                 }
 
+                Console.WriteLine("Attempting to save changes...");
                 context.SaveChanges();
+                Console.WriteLine("Saved.");
             }
             
             Console.ReadLine();

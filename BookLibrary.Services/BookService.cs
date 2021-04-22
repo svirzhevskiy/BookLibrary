@@ -25,7 +25,7 @@ namespace BookLibrary.Services
             watch.Start();
 
             var result = await _context.Books.Where(x => 
-                    EF.Functions.ToTsVector("english", x.Title + " " + x.Blurb).Matches(filter.SearchString))
+                    x.SearchVector.Matches(filter.SearchString))
                 .Select(x => new
                 {
                     Title = x.Title,

@@ -6,11 +6,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using NpgsqlTypes;
 
 namespace BookLibrary.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210421125341_Init")]
+    [Migration("20210422084211_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,6 +53,9 @@ namespace BookLibrary.Database.Migrations
 
                     b.Property<Guid>("PublisherId")
                         .HasColumnType("uuid");
+
+                    b.Property<NpgsqlTsVector>("SearchVector")
+                        .HasColumnType("tsvector");
 
                     b.Property<string>("Title")
                         .HasColumnType("text");
