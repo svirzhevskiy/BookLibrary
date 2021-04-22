@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using BookLibrary.Application.Models;
@@ -21,11 +22,14 @@ namespace BookLibrary.Services
 
         public async Task<BookViewModel> Search(BookFilter filter)
         {
+            var tsQueryString =
+                string.Join(" &", filter.SearchString.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+
             var watch = new Stopwatch();
             watch.Start();
 
             var result = await _context.Books.Where(x => 
-                    x.SearchVector.Matches(filter.SearchString))
+                    x.SearchVector.Matches(tsQueryString))
                 .Select(x => new
                 {
                     Title = x.Title,
@@ -33,8 +37,11 @@ namespace BookLibrary.Services
                     Year = x.Year,
                     Blurb = x.Blurb,
                     Author = x.Author.Name,
-                    Publisher = x.Publisher.Title
+                    Publisher = x.Publisher.Title,
+                    Rank = x.SearchVector.Rank(EF.Functions.ToTsQuery("english", tsQueryString))
                 })
+                .OrderByDescending(x => x.Rank)
+                .ThenBy(x => x.Title)
                 .ToListAsync();
 
             watch.Stop();
@@ -51,7 +58,7 @@ namespace BookLibrary.Services
                     Author = x.Author,
                     Publisher = x.Publisher
                 }),
-                Time = $"{elapsedTime.Seconds : 00}s {elapsedTime.Milliseconds : 00}ms"
+                Time = $"{elapsedTime.Milliseconds}ms"
             };
         }
     }
