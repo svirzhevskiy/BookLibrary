@@ -1,0 +1,15 @@
+﻿.search-panel {
+    margin: 1rem 0;
+}
+
+.search-panel input {
+    
+}
+
+.book {
+    margin: 1rem 0;
+}
+.book .title {
+    font-weight: 600;
+    color: var(--title-color);
+}

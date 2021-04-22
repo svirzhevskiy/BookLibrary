@@ -1,0 +1,50 @@
+﻿@page "/"
+@using BookLibrary.Application.Services
+@using BookLibrary.Application.Models
+@inject IBookService _bookService
+
+<div class="container">
+    <div class="search-panel">
+        <input type="text" @bind-value="_filter.SearchString"/>
+        <button @onclick="OnClickSearch" disabled="@_loading">search</button>
+        @if (_model is not null)
+        {
+            <div>Time: @_model.Time</div>
+        }
+    </div>
+    <div class="books">
+        @if (_model is not null)
+        {
+            foreach (var book in _model.Books)
+            {
+                <div class="book">
+                    <div class="title">@book.Title</div>
+                    <div>Author: @book.Author</div>
+                    <div>@book.Blurb[..100]</div>
+                    <div>@book.Publisher @book.Year</div>
+                </div>
+            }
+        }
+        else
+        {
+            <div>Search something...</div>
+        }
+    </div>
+</div>
+
+
+
+@code
+{
+    private BookFilter _filter = new();
+    private BookViewModel _model;
+    private bool _loading;
+
+    private async void OnClickSearch()
+    {
+        _loading = true;
+        _model = await _bookService.Search(_filter);
+        _loading = false;
+        StateHasChanged();
+    }
+}
