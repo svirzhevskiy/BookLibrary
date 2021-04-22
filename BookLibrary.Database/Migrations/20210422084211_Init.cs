@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using NpgsqlTypes;
 
 namespace BookLibrary.Database.Migrations
 {
@@ -41,7 +42,8 @@ namespace BookLibrary.Database.Migrations
                     Year = table.Column<int>(type: "integer", nullable: false),
                     Blurb = table.Column<string>(type: "text", nullable: true),
                     AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    PublisherId = table.Column<Guid>(type: "uuid", nullable: false)
+                    PublisherId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SearchVector = table.Column<NpgsqlTsVector>(type: "tsvector", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -69,6 +71,11 @@ namespace BookLibrary.Database.Migrations
                 name: "IX_Books_PublisherId",
                 table: "Books",
                 column: "PublisherId");
+            
+            migrationBuilder.Sql(
+                @"CREATE TRIGGER book_search_vector_update BEFORE INSERT OR UPDATE
+              ON ""Books"" FOR EACH ROW EXECUTE PROCEDURE
+              tsvector_update_trigger(""SearchVector"", 'pg_catalog.english', ""Title"", ""Blurb"");");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -81,6 +88,8 @@ namespace BookLibrary.Database.Migrations
 
             migrationBuilder.DropTable(
                 name: "Publishers");
+            
+            migrationBuilder.Sql("DROP TRIGGER book_search_vector_update");
         }
     }
 }
