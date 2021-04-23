@@ -1,4 +1,25 @@
 ### Npgsql full text search
+
+Use mapping on PostgreSQL 12 and version 5.0.0 of the EF Core provider
+```
+public class Book //Entities/Book
+{
+...
+    public NpgsqlTsVector SearchVector { get; set; }
+}
+protected override void OnModelCreating(ModelBuilder builder) //in AppDbContext
+{
+...
+    builder
+        .HasGeneratedTsVectorColumn(
+            x => x.SearchVector,
+            "english",
+            x => new {x.Title, x.Blurb})
+        .HasIndex(x => x.SearchVector)
+        .HasMethod("GIN");
+}
+```
+Or add to Up and Down migration manualy:
 Add to Up migration or run on db for creating trigger that creates SearchVector for entity on insert or update
 ```
 migrationBuilder.Sql(
@@ -14,13 +35,13 @@ migrationBuilder.Sql("DROP TRIGGER book_search_vector_update");
 
 Using
 ```
-_context.Books.Where(x => x.SearchVector.Matches(tsQueryString))
+_context.Books.Where(x => x.SearchVector.Matches(tsQueryString)) //BookService
 ```
 For ranking results
 ```
 .Select(x => new
 {
-    ...
+...
     Rank = x.SearchVector.Rank(EF.Functions.ToTsQuery("english", tsQueryString))
 })
 .OrderByDescending(x => x.Rank)
