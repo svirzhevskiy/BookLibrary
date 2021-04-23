@@ -13,20 +13,18 @@
             <input 
                 type="text"
                 placeholder="Search..."
-                @bind-value="_filter.SearchString" 
-                @onkeydown="@OnKeyDown"/>
+                @bind-value="_filter.SearchString"/>
         </div>
         <button @onclick="OnClickSearch" disabled="@_loading">Search</button>
-        @if (_model is not null)
+        @if (_time > 0)
         {
-            <div class="elapsed-time">Time: @_model.Time.ToString("00") ms</div>
+            <div class="elapsed-time">Time: @_time.ToString("00") ms</div>
         }
     </div>
     <div class="books">
-        @if (_model is not null && _model.Books.Any())
+        @if (_books.Any())
         {
-            foreach (var book in _model.Books)
-            {
+            <Virtualize Context="book" Items="_books">
                 <div class="book">
                     <h3 class="title">@book.Title - @book.Author</h3>
                     <div class="blurb">
@@ -41,7 +39,7 @@
                     </div>
                     <div class="publisher">@book.Publisher @book.Year</div>
                 </div>
-            }
+            </Virtualize>
         }
         else if (string.IsNullOrEmpty(_filter.SearchString))
         {
@@ -59,29 +57,24 @@
 @code
 {
     private BookFilter _filter = new();
-    private BookViewModel _model;
     private bool _loading;
+    private List<Book> _books = new();
+    private double _time;
 
     private async void OnClickSearch()
     {
         _loading = true;
         if (!string.IsNullOrEmpty(_filter.SearchString))
         {
-            _model = await _bookService.Search(_filter);
+            var result = await _bookService.Search(_filter);
+            _books = result.Books.ToList();
+            _time = result.Time;
         }
         else
         {
-            _model = null;
+            _books = new List<Book>();
         }
         _loading = false;
         StateHasChanged();
-    }
-    
-    private void OnKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Code == "Enter" && !_loading)
-        {
-            OnClickSearch();
-        }
     }
 }

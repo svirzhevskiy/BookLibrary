@@ -45,6 +45,10 @@
 .search-panel input::placeholder{
     color: var(--muted-text);
 }
+.search-panel input::selection{
+    background: var(--accent-color);
+    color: var(--text-color);
+}
 
 .search-panel button {
     background: var(--accent-color);
@@ -54,12 +58,17 @@
     margin-left: 1rem;
     border-radius: 0.5rem;
     border: 2px solid var(--accent-color);
+    cursor: pointer;
 }
 .search-panel button {
     outline: none;
 }
 .search-panel button:active {
     box-shadow: 0 0 6px 3px var(--muted-text);
+}
+.search-panel button:disabled {
+    background: var(--muted-text);
+    cursor: progress;
 }
 
 .search-panel .elapsed-time{
